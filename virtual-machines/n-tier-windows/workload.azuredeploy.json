@@ -11,7 +11,7 @@
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/parameters/",
+      "defaultValue": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/parameters/",
       "metadata": {
         "decription": "Root path for parameters"
       }
@@ -23,29 +23,13 @@
         "loadBalancer": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json')]",
         "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]"
       },
-      "parameter": {
-        "biz": "[concat(parameters('parameterRootUri'), 'biz.parameters.json')]",
+      "parameter": {        
         "web": "[concat(parameters('parameterRootUri'), 'web.parameters.json')]",
         "managementTier": "[concat(parameters('parameterRootUri'), 'virtualMachines-mgmt.parameters.json')]"
       }
     }
   },
   "resources": [
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "name": "ra-ntier-sql-biz-deployment",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('templates').deployment.loadBalancer]"
-        },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.biz]",
-          "contentVersion": "1.0.0.0"
-        }
-      }
-    },
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",

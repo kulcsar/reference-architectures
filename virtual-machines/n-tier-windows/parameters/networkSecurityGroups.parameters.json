@@ -29,56 +29,11 @@
           ],
           "securityRules": [
             {
-              "name": "allow-traffic-from-biz",
-              "description": "Allow traffic originating from Business tier.",
+              "name": "allow-traffic-from-web",
+              "description": "Allow traffic originating from Web tier.",
               "protocol": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "1433",
-              "sourceAddressPrefix": "10.0.2.0/24",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            },
-            {
-              "name": "allow-mgmt-rdp",
-              "direction": "Inbound",
-              "priority": 110,
-              "sourceAddressPrefix": "10.0.0.128/25",
-              "destinationAddressPrefix": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "3389",
-              "access": "Allow",
-              "protocol": "Tcp"
-            },
-            {
-              "name": "deny-other-traffic",
-              "description": "Deny all other traffic",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "*",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Deny",
-              "priority": 120,
-              "direction": "Inbound"
-            }
-          ]
-        },
-        {
-          "name": "ra-ntier-sql-svca-nsg",
-          "subnets": [
-            "biz"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-            {
-              "name": "allow-web-tier-traffic",
-              "description": "Allow web traffic originating from Web Tier.",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "80",
               "sourceAddressPrefix": "10.0.1.0/24",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -109,7 +64,7 @@
               "direction": "Inbound"
             }
           ]
-        },
+        },        
         {
           "name": "ra-ntier-sql-svcb-nsg",
           "subnets": [

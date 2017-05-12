@@ -49,7 +49,6 @@ $sqlConfigureAOExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot
 # Infrastructure And Workload Parameters Files
 $virtualNetworkParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\virtualNetwork.parameters.json")
 $managementParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\virtualMachines-mgmt.parameters.json")
-$bizLoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\biz.parameters.json")
 $webLoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\web.parameters.json")
 $networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\networkSecurityGroups.parameters.json")
 
@@ -114,12 +113,7 @@ elseif ($Mode -eq "Workload") {
     Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
-    Write-Host "Deploy Service A servers with load balancer..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-biz-deployment" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $bizLoadBalancerParametersFile
-
-	Write-Host "Deploy Service B servers with load balancer..."
+	Write-Host "Deploy Service servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
         -TemplateParameterFile $webLoadBalancerParametersFile
