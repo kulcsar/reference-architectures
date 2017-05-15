@@ -50,6 +50,7 @@ $sqlConfigureAOExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot
 $virtualNetworkParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\virtualNetwork.parameters.json")
 $managementParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\virtualMachines-mgmt.parameters.json")
 $webLoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\web.parameters.json")
+$web2LoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\web2.parameters.json")
 $networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\networkSecurityGroups.parameters.json")
 
 $infrastructureResourceGroupName = "ra-ntier-sql-network-rg"
@@ -110,16 +111,21 @@ if ($Mode -eq "Infrastructure") {
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $sqlConfigureAOExtensionParametersFile
 }
 elseif ($Mode -eq "Workload") {
-    Write-Host "Creating workload resource group..."
+	Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
-	Write-Host "Deploy Service servers with load balancer..."
+	Write-Host "Deploy Web servers load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
         -TemplateParameterFile $webLoadBalancerParametersFile
+	
+	Write-Host "Deploy Web2 servers with load balancer..."
+    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web2-deployment" `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -TemplateParameterFile $web2LoadBalancerParametersFile
 }
 elseif ($Mode -eq "Security") {
-    # Deploy DMZs
+    # Deploy NSGs
     $infrastructureResourceGroup = Get-AzureRmResourceGroup -Name $infrastructureResourceGroupName 
 
     Write-Host "Deploying NSGs..."

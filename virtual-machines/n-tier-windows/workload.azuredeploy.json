@@ -23,8 +23,9 @@
         "loadBalancer": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json')]",
         "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]"
       },
-      "parameter": {        
+      "parameter": {
         "web": "[concat(parameters('parameterRootUri'), 'web.parameters.json')]",
+        "web2": "[concat(parameters('parameterRootUri'), 'web2.parameters.json')]",
         "managementTier": "[concat(parameters('parameterRootUri'), 'virtualMachines-mgmt.parameters.json')]"
       }
     }
