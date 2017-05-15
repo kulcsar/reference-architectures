@@ -18,5 +18,4 @@ $fileShareName = $fileShareUri.Replace("https://", "")
 $fileShareName = $fileShareName.Replace("/", "\")
 
 $cmd = "net use ${driveLetter}: \\$fileShareName /USER:AZURE\$storageAccountName $storageAccountKey /persistent:Yes"
-$cmd
 Invoke-Expression -Command $cmd
