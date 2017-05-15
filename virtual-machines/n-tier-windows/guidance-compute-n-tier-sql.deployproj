@@ -27,6 +27,7 @@
   <ItemGroup>
     <Content Include="virtualNetwork.azuredeploy.json" />
     <None Include="Deploy-ReferenceArchitecture.ps1" />
+    <None Include="extensions\fileshare.ps1" />
     <None Include="extensions\adds-forest.ps1" />
     <None Include="extensions\adds.ps1" />
     <None Include="extensions\CreateADBDC.ps1.zip" />
@@ -48,9 +49,11 @@
     <None Include="parameters\web.parameters.json" />
     <None Include="parameters\virtualMachines-mgmt.parameters.json" />
     <None Include="parameters\virtualNetwork.parameters.json" />
+    <None Include="templates\fileshare-settings-mapper.json" />
     <None Include="templates\adds\ad-forest-extension-settings-mapper.json" />
     <None Include="templates\adds\adds-domain-controller-extension-settings-mapper.json" />
     <None Include="security.azuredeploy.json" />
+    <None Include="templates\filesharestorage.template.json" />
     <None Include="workload.azuredeploy.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />

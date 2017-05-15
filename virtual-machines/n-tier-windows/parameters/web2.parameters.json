@@ -110,7 +110,28 @@
               "modulesUrl": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/iisaspnet.ps1.zip",
               "configurationFunction": "iisaspnet.ps1\\iisaspnet"
             },
-            "protectedSettingsConfig": { }
+            "protectedSettingsConfig": {}
+          },
+          {
+            "name": "map-fileshare",
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.8",
+            "autoUpgradeMinorVersion": false,
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/templates/fileshare-settings-mapper.json",
+            "settingsConfig": {
+              "fileShareSettings": {
+                "driveLetter": "driveLetter",
+                "fileShareUri": "fileShareUri",
+                "storageAccountName": "storageAccountName",
+                "storageAccountKey": "storageAccountKey"
+              },
+              "fileUris": [
+                "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/fileshare.ps1"
+              ]
+            },
+            "protectedSettingsConfig": {
+            }
           }
         ],
         "availabilitySet": {

@@ -33,6 +33,7 @@ $virtualNetworkTemplate = New-Object System.Uri -ArgumentList @($templateRootUri
 $virtualMachineTemplate = New-Object System.Uri -ArgumentList @($templateRootUri, "templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json")
 $virtualMachineExtensionsTemplate = New-Object System.Uri -ArgumentList @($templateRootUri, "templates/buildingBlocks/virtualMachine-extensions/azuredeploy.json")
 $networkSecurityGroupTemplate = New-Object System.Uri -ArgumentList @($templateRootUri, "templates/buildingBlocks/networkSecurityGroups/azuredeploy.json")
+$fileshareTemplateFile = [System.IO.Path]::Combine($PSScriptRoot, "templates\filesharestorage.template.json")
 
 # Azure ADDS Parameter Files
 $domainControllersParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\adds\ad.parameters.json")
@@ -114,15 +115,52 @@ elseif ($Mode -eq "Workload") {
 	Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
+	Write-Host "Deploy Storage account for file share"
+	$fileshareStorageAccountName = "strgbm$(Get-Date -format 'yyyyMMddHHmm')"
+	New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-fileshare-deployment" `
+		-ResourceGroupName $workloadResourceGroup.ResourceGroupName `
+		-TemplateFile $fileshareTemplateFile `
+		-storageAccountName $fileshareStorageAccountName -accountType "Standard_LRS" -location $Location
+
+	#Get the storage account key
+	$storageAccountKey = (Get-AzureRmStorageAccountKey -StorageAccountName $fileshareStorageAccountName -ResourceGroupName $workloadResourceGroupName)[0].Value   
+	#Create a context for storage account and key
+	$ctx=New-AzureStorageContext -StorageAccountName $fileshareStorageAccountName -StorageAccountKey $storageAccountKey  
+	#Create a new file share
+	$fileshare = New-AzureStorageShare "share1" -Context $ctx
+	Write-Host "File share created: $fileshare.Uri"
+
+	#Get web templates and provide fileShareSettings
+	$webLoadBalancerParameterObject = Get-Content $webLoadBalancerParametersFile | Out-String | ConvertFrom-Json
+	$web2LoadBalancerParameterObject = Get-Content $web2LoadBalancerParametersFile | Out-String | ConvertFrom-Json
+	ForEach ($ext in $webLoadBalancerParameterObject.parameters.virtualMachinesSettings.value.extensions)
+	{
+		if ($ext.name -eq "map-fileshare") {
+			$ext.settingsConfig.fileShareSettings.driveLetter = "X"
+			$ext.settingsConfig.fileShareSettings.fileShareUri = $fileshare.Uri
+			$ext.settingsConfig.fileShareSettings.storageAccountName = $fileshareStorageAccountName
+			$ext.settingsConfig.fileShareSettings.storageAccountKey = $storageAccountKey
+		}
+	}
+	ForEach ($ext in $web2LoadBalancerParameterObject.parameters.virtualMachinesSettings.value.extensions)
+	{
+		if ($ext.name -eq "map-fileshare") {
+			$ext.settingsConfig.fileShareSettings.driveLetter = "X"
+			$ext.settingsConfig.fileShareSettings.fileShareUri = $fileshare.Uri
+			$ext.settingsConfig.fileShareSettings.storageAccountName = $fileshareStorageAccountName
+			$ext.settingsConfig.fileShareSettings.storageAccountKey = $storageAccountKey
+		}
+	}	
+
 	Write-Host "Deploy Web servers load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $webLoadBalancerParametersFile
+        -TemplateParameterObject $webLoadBalancerParameterObject
 	
 	Write-Host "Deploy Web2 servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web2-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $web2LoadBalancerParametersFile
+        -TemplateParameterObject $web2LoadBalancerParameterObject
 }
 elseif ($Mode -eq "Security") {
     # Deploy NSGs
