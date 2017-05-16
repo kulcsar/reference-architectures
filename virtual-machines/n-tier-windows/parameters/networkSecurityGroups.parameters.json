@@ -64,7 +64,7 @@
               "direction": "Inbound"
             }
           ]
-        },        
+        },
         {
           "name": "ra-ntier-sql-svcb-nsg",
           "subnets": [

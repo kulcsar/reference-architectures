@@ -18,7 +18,7 @@
                 "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/CreateFailoverCluster.ps1.zip",
                 "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
                 "properties": {
-                  "domainName": "azure-bimobject.com",
+                  "domainName": "contoso.com",
                   "clusterName": "ra-ntier-sql-fc",
                   "sharePath": "\\\\fsw1\\sql-fs",
                   "nodes": [

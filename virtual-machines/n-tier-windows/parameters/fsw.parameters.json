@@ -52,9 +52,9 @@
             "autoUpgradeMinorVersion": true,
             "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
             "settingsConfig": {
-              "Name": "azure-bimobject.com",
+              "Name": "contoso.com",
               "OUPath": "",
-              "User": "azure-bimobject.com\\testuser",
+              "User": "contoso.com\\testuser",
               "Restart": true,
               "Options": 3
             },
@@ -73,7 +73,7 @@
               "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/CreateFileShareWitness.ps1.zip",
               "configurationFunction": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
               "properties": {
-                "domainName": "azure-bimobject.com",
+                "domainName": "contoso.com",
                 "SharePath": "sql-fs",
                 "adminCreds": {
                   "userName": "testuser",

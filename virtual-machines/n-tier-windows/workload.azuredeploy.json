@@ -45,6 +45,21 @@
           "contentVersion": "1.0.0.0"
         }
       }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-ntier-sql-web2-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.web2]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
     }
   ]
 }

@@ -58,7 +58,14 @@ $infrastructureResourceGroupName = "ra-ntier-sql-network-rg"
 $workloadResourceGroupName = "ra-ntier-sql-workload-rg"
 
 # Login to Azure and select your subscription
-# Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
+
+#BIM
+$TenantId1 = "be7e8c4f-9f7a-4e9e-bfad-bbc3a48403ea"
+Login-AzureRmAccount -TenantId $TenantId1 -SubscriptionId $SubscriptionId | Out-Null
+
+#MS
+#$TenantId1 = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+#Login-AzureRmAccount -TenantId $TenantId1 -SubscriptionId $SubscriptionId | Out-Null
 
 if ($Mode -eq "Infrastructure") {
     $infrastructureResourceGroup = New-AzureRmResourceGroup -Name $infrastructureResourceGroupName -Location $Location
@@ -112,7 +119,7 @@ if ($Mode -eq "Infrastructure") {
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $sqlConfigureAOExtensionParametersFile
 }
 elseif ($Mode -eq "Workload") {
-	Write-Host "Creating workload resource group..."
+    Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
 	Write-Host "Deploying Storage account for file share..."

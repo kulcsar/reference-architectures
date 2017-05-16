@@ -15,9 +15,9 @@
               "autoUpgradeMinorVersion": true,
               "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
               "settingsConfig": {
-                "Name": "azure-bimobject.com",
+                "Name": "contoso.com",
                 "OUPath": "",
-                "User": "azure-bimobject.com\\testuser",
+                "User": "contoso.com\\testuser",
                 "Restart": true,
                 "Options": 3
               },
@@ -34,7 +34,7 @@
               "settingsConfigMapperUri": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/templates/adds/adds-domain-controller-extension-settings-mapper.json",
               "settingsConfig": {
                 "activeDirectorySettings": {
-                  "domainName": "azure-bimobject.com",
+                  "domainName": "contoso.com",
                   "adminUser": "testuser",
                   "adminPassword": "AweS0me@PW",
                   "siteName": "Default-First-Site-Name",
