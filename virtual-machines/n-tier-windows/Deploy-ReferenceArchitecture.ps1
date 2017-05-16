@@ -58,7 +58,7 @@ $infrastructureResourceGroupName = "ra-ntier-sql-network-rg"
 $workloadResourceGroupName = "ra-ntier-sql-workload-rg"
 
 # Login to Azure and select your subscription
-Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
+# Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
 if ($Mode -eq "Infrastructure") {
     $infrastructureResourceGroup = New-AzureRmResourceGroup -Name $infrastructureResourceGroupName -Location $Location
@@ -115,7 +115,7 @@ elseif ($Mode -eq "Workload") {
 	Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
-	Write-Host "Deploy Storage account for file share"
+	Write-Host "Deploying Storage account for file share..."
 	$fileshareStorageAccountName = "strgbm$(Get-Date -format 'yyyyMMddHHmm')"
 	New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-fileshare-deployment" `
 		-ResourceGroupName $workloadResourceGroup.ResourceGroupName `
@@ -128,8 +128,9 @@ elseif ($Mode -eq "Workload") {
 	$ctx=New-AzureStorageContext -StorageAccountName $fileshareStorageAccountName -StorageAccountKey $storageAccountKey  
 	#Create a new file share
 	$fileshare = New-AzureStorageShare "share1" -Context $ctx
-	Write-Host "File share created: $fileshare.Uri"
-
+	$fileshare.Uri
+	
+	Write-Host "Updating web and web2 parameters..."
 	#Get web templates and provide fileShareSettings
 	$webLoadBalancerParameterObject = Get-Content $webLoadBalancerParametersFile | Out-String | ConvertFrom-Json
 	$web2LoadBalancerParameterObject = Get-Content $web2LoadBalancerParametersFile | Out-String | ConvertFrom-Json
@@ -151,16 +152,18 @@ elseif ($Mode -eq "Workload") {
 			$ext.settingsConfig.fileShareSettings.storageAccountKey = $storageAccountKey
 		}
 	}	
+	$webLoadBalancerParameterObject | ConvertTo-Json -Depth 100 | Out-File $webLoadBalancerParametersFile
+	$web2LoadBalancerParameterObject | ConvertTo-Json -Depth 100 | Out-File $web2LoadBalancerParametersFile
 
 	Write-Host "Deploy Web servers load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterObject $webLoadBalancerParameterObject
+        -TemplateParameterFile $webLoadBalancerParametersFile
 	
 	Write-Host "Deploy Web2 servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web2-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterObject $web2LoadBalancerParameterObject
+        -TemplateParameterFile $web2LoadBalancerParametersFile
 }
 elseif ($Mode -eq "Security") {
     # Deploy NSGs
