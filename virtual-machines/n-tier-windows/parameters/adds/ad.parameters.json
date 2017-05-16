@@ -6,7 +6,7 @@
       "value": {
         "namePrefix": "ra-ntier-sql-ad",
         "computerNamePrefix": "ad",
-        "size": "Standard_DS1_v2",
+        "size": "Standard_DS1",
         "osType": "windows",
         "adminUsername": "testuser",
         "adminPassword": "AweS0me@PW",

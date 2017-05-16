@@ -6,7 +6,7 @@
       "value": {
         "namePrefix": "ra-ntier-sql-fsw",
         "computerNamePrefix": "fsw",
-        "size": "Standard_DS1_v2",
+        "size": "Standard_DS1",
         "osType": "windows",
         "adminUsername": "testuser",
         "adminPassword": "AweS0me@PW",
@@ -52,9 +52,9 @@
             "autoUpgradeMinorVersion": true,
             "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
             "settingsConfig": {
-              "Name": "contoso.com",
+              "Name": "azure-bimobject.com",
               "OUPath": "",
-              "User": "contoso.com\\testuser",
+              "User": "azure-bimobject.com\\testuser",
               "Restart": true,
               "Options": 3
             },
@@ -73,7 +73,7 @@
               "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/CreateFileShareWitness.ps1.zip",
               "configurationFunction": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
               "properties": {
-                "domainName": "contoso.com",
+                "domainName": "azure-bimobject.com",
                 "SharePath": "sql-fs",
                 "adminCreds": {
                   "userName": "testuser",

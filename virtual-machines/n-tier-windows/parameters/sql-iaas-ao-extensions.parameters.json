@@ -47,7 +47,7 @@
                 "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/PrepareAlwaysOnSqlServer.ps1.zip",
                 "configurationFunction": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
                 "properties": {
-                  "domainName": "contoso.com",
+                  "domainName": "azure-bimobject.com",
                   "sqlAlwaysOnEndpointName": "ra-ntier-sql-hadr",
                   "adminCreds": {
                     "userName": "testuser",

@@ -1,8 +1,8 @@
 ﻿[CmdletBinding()]
 Param(
 	[string]$SafeModePassword = "SafeModeP@ssw0rd",
-	[string]$DomainName = "contoso.com",
-	[string]$DomainNetbiosName = "CONTOSO"
+	[string]$DomainName = "azure-bimobject.com",
+	[string]$DomainNetbiosName = "azure-bimobject"
 )
 
 $ErrorActionPreference = "Stop"
