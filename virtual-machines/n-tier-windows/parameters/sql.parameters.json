@@ -4,10 +4,10 @@
   "parameters": {
     "loadBalancerSettings": {
       "value": {
-        "name": "ra-ntier-sql-lb",
+        "name": "boinfra-lb",
         "frontendIPConfigurations": [
           {
-            "name": "ra-ntier-sql-lbfe1",
+            "name": "boinfra-lbfe1",
             "loadBalancerType": "internal",
             "domainNameLabel": "",
             "internalLoadBalancerSettings": {
@@ -22,15 +22,15 @@
             "frontendPort": 1433,
             "backendPort": 1433,
             "protocol": "Tcp",
-            "backendPoolName": "ra-ntier-sql-lb-bep1",
-            "frontendIPConfigurationName": "ra-ntier-sql-lbfe1",
+            "backendPoolName": "boinfra-lb-bep1",
+            "frontendIPConfigurationName": "boinfra-lbfe1",
             "enableFloatingIP": true,
-            "probeName": "ra-ntier-sql-lbp1"
+            "probeName": "boinfra-lbp1"
           }
         ],
         "probes": [
           {
-            "name": "ra-ntier-sql-lbp1",
+            "name": "boinfra-lbp1",
             "port": 59999,
             "protocol": "Tcp",
             "requestPath": null
@@ -38,7 +38,7 @@
         ],
         "backendPools": [
           {
-            "name": "ra-ntier-sql-lb-bep1",
+            "name": "boinfra-lb-bep1",
             "nicIndex": 0
           }
         ],
@@ -47,7 +47,7 @@
     },
     "virtualMachinesSettings": {
       "value": {
-        "namePrefix": "ra-ntier-sql",
+        "namePrefix": "boinfra",
         "computerNamePrefix": "sql",
         "size": "Standard_DS1",
         "osType": "windows",
@@ -76,9 +76,9 @@
           "version": "latest"
         },
         "dataDisks": {
-          "count": 1,
+          "count": 2,
           "properties": {
-            "diskSizeGB": 512,
+            "diskSizeGB": 1000,
             "caching": "ReadOnly",
             "createOption": "Empty"
           }
@@ -95,9 +95,9 @@
             "autoUpgradeMinorVersion": true,
             "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
             "settingsConfig": {
-              "Name": "contoso.com",
+              "Name": "azure-bimobject.com",
               "OUPath": "",
-              "User": "contoso.com\\testuser",
+              "User": "azure-bimobject.com\\testuser",
               "Restart": true,
               "Options": 3
             },
@@ -114,8 +114,8 @@
     },
     "virtualNetworkSettings": {
       "value": {
-        "name": "ra-ntier-sql-vnet",
-        "resourceGroup": "ra-ntier-sql-network-rg"
+        "name": "boinfra-vnet",
+        "resourceGroup": "boinfra-network-rg"
       }
     },
     "buildingBlockSettings": {

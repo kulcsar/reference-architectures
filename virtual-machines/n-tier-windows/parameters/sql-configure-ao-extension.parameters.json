@@ -5,7 +5,7 @@
     "virtualMachinesExtensionSettings": {
       "value": [
         {
-          "vms": [ "ra-ntier-sql-vm2" ],
+          "vms": [ "boinfra-vm2" ],
           "extensions": [
             {
               "name": "configuringAlwaysOn",
@@ -18,19 +18,19 @@
                 "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/CreateFailoverCluster.ps1.zip",
                 "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
                 "properties": {
-                  "domainName": "contoso.com",
-                  "clusterName": "ra-ntier-sql-fc",
+                  "domainName": "azure-bimobject.com",
+                  "clusterName": "boinfra-fc",
                   "sharePath": "\\\\fsw1\\sql-fs",
                   "nodes": [
                     "sql1",
                     "sql2"
                   ],
-                  "sqlAlwaysOnEndpointName": "ra-ntier-sql-hadr",
+                  "sqlAlwaysOnEndpointName": "boinfra-hadr",
                   "sqlAlwaysOnAvailabilityGroupName": "alwayson-ag",
                   "sqlAlwaysOnAvailabilityGroupListenerName": "alwayson-ag-listener",
                   "SqlAlwaysOnAvailabilityGroupListenerPort": "1433",
                   "databaseNames": "AutoHa-sample",
-                  "lbName": "ra-ntier-sql-lb",
+                  "lbName": "boinfra-lb",
                   "lbAddress": "10.0.3.100",
                   "primaryReplica": "sql2",
                   "secondaryReplica": "sql1",

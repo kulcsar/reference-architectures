@@ -4,7 +4,7 @@
   "parameters": {
     "virtualMachinesSettings": {
       "value": {
-        "namePrefix": "ra-ntier-sql-jb",
+        "namePrefix": "boinfra-jb",
         "computerNamePrefix": "jb",
         "size": "Standard_DS1",
         "osType": "windows",
@@ -75,8 +75,8 @@
     },
     "virtualNetworkSettings": {
       "value": {
-        "name": "ra-ntier-sql-vnet",
-        "resourceGroup": "ra-ntier-sql-network-rg"
+        "name": "boinfra-vnet",
+        "resourceGroup": "boinfra-network-rg"
       }
     },
     "buildingBlockSettings": {

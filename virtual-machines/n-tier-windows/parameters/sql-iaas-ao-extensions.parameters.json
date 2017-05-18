@@ -5,7 +5,7 @@
     "virtualMachinesExtensionSettings": {
       "value": [
         {
-          "vms": [ "ra-ntier-sql-vm1" ],
+          "vms": [ "boinfra-vm1" ],
           "extensions": [
             {
               "name": "SqlVmIaasExtension",
@@ -47,8 +47,8 @@
                 "modulesURL": "https://raw.githubusercontent.com/kulcsar/reference-architectures/bim/virtual-machines/n-tier-windows/extensions/PrepareAlwaysOnSqlServer.ps1.zip",
                 "configurationFunction": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
                 "properties": {
-                  "domainName": "contoso.com",
-                  "sqlAlwaysOnEndpointName": "ra-ntier-sql-hadr",
+                  "domainName": "azure-bimobject.com",
+                  "sqlAlwaysOnEndpointName": "boinfra-hadr",
                   "adminCreds": {
                     "userName": "testuser",
                     "password": "privateSettingsRef:AdminPassword"
@@ -72,7 +72,7 @@
           ]
         },
         {
-          "vms": [ "ra-ntier-sql-vm2" ],
+          "vms": [ "boinfra-vm2" ],
           "extensions": [
             {
               "name": "SqlVmIaasExtension",

@@ -4,14 +4,14 @@
   "parameters": {
     "virtualNetworkSettings": {
       "value": {
-        "name": "ra-ntier-sql-vnet",
-        "resourceGroup": "ra-ntier-sql-network-rg"
+        "name": "boinfra-vnet",
+        "resourceGroup": "boinfra-network-rg"
       }
     },
     "networkSecurityGroupsSettings": {
       "value": [
         {
-          "name": "ra-ntier-sql-ad-nsg",
+          "name": "boinfra-ad-nsg",
           "subnets": [
             "ad"
           ],
@@ -21,7 +21,7 @@
           ]
         },
         {
-          "name": "ra-ntier-sql-nsg",
+          "name": "boinfra-nsg",
           "subnets": [
             "sql"
           ],
@@ -66,7 +66,7 @@
           ]
         },
         {
-          "name": "ra-ntier-sql-svcb-nsg",
+          "name": "boinfra-svcb-nsg",
           "subnets": [
             "web"
           ],
@@ -123,10 +123,10 @@
           ]
         },
         {
-          "name": "ra-ntier-sql-mgmt-nsg",
+          "name": "boinfra-mgmt-nsg",
           "subnets": [ ],
           "networkInterfaces": [
-            "ra-ntier-sql-jb-vm1-nic1"
+            "boinfra-jb-vm1-nic1"
           ],
           "securityRules": [
             {

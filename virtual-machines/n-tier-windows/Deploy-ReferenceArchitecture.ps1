@@ -3,11 +3,13 @@
 #
 param(
   [Parameter(Mandatory=$true)]
+  $TenantId,	
+  [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$true)]
   $Location,
   [Parameter(Mandatory=$true)]
-  [ValidateSet("Infrastructure", "Security", "Workload")]
+  [ValidateSet("Step1Infra", "Step2Infra", "Step3Workload", "Step4Security")]
   $Mode
 )
 
@@ -54,77 +56,79 @@ $webLoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "param
 $web2LoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\web2.parameters.json")
 $networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\networkSecurityGroups.parameters.json")
 
-$infrastructureResourceGroupName = "ra-ntier-sql-network-rg"
-$workloadResourceGroupName = "ra-ntier-sql-workload-rg"
+$infrastructureResourceGroupName = "boinfra-network-rg"
+$workloadResourceGroupName = "boinfra-workload-rg"
 
 # Login to Azure and select your subscription
+Login-AzureRmAccount -TenantId $TenantId -SubscriptionId $SubscriptionId | Out-Null
 
-#BIM
-$TenantId1 = "be7e8c4f-9f7a-4e9e-bfad-bbc3a48403ea"
-Login-AzureRmAccount -TenantId $TenantId1 -SubscriptionId $SubscriptionId | Out-Null
-
-#MS
-#$TenantId1 = "72f988bf-86f1-41af-91ab-2d7cd011db47"
-#Login-AzureRmAccount -TenantId $TenantId1 -SubscriptionId $SubscriptionId | Out-Null
-
-if ($Mode -eq "Infrastructure") {
+if ($Mode -eq "Step1Infra") {
     $infrastructureResourceGroup = New-AzureRmResourceGroup -Name $infrastructureResourceGroupName -Location $Location
     Write-Host "Creating virtual network..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-vnet-deployment" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-vnet-deployment" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
         -TemplateParameterFile $virtualNetworkParametersFile
 
 	Write-Host "Deploying jumpbox..."
-	New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-mgmt-deployment" -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
+	New-AzureRmResourceGroupDeployment -Name "boinfra-mgmt-deployment" -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
     -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile
-
-    Write-Host "Deploying ADDS servers..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-ad-deployment" `
+	
+	Write-Host "Deploying ADDS servers..."
+    New-AzureRmResourceGroupDeployment -Name "boinfra-ad-deployment" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $domainControllersParametersFile
 
     Write-Host "Updating virtual network DNS servers..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-update-dns" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-update-dns" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
         -TemplateParameterFile $virtualNetworkDNSParametersFile
 
     Write-Host "Creating ADDS forest..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-primary-ad-ext" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-primary-ad-ext" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $createAddsDomainControllerForestExtensionParametersFile
 
+	Write-Host "Restarting boinfra-ad-vm1..."
+	Restart-AzureRmVM -ResourceGroupName $infrastructureResourceGroupName -Name "boinfra-ad-vm1"
+	
+	Write-Host "Restarting boinfra-ad-vm2..."
+	Restart-AzureRmVM -ResourceGroupName $infrastructureResourceGroupName -Name "boinfra-ad-vm2" 
+
     Write-Host "Creating ADDS domain controller..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-secondary-ad-ext" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-secondary-ad-ext" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $addAddsDomainControllerExtensionParametersFile
-	
-    Write-Host "Deploy SQL servers with load balancer..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-servers" `
+}
+elseif ($Mode -eq "Step2Infra") {	
+    $infrastructureResourceGroup = Get-AzureRmResourceGroup -Name $infrastructureResourceGroupName 
+
+	Write-Host "Deploy SQL servers with load balancer..."
+    New-AzureRmResourceGroupDeployment -Name "boinfra-servers" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
         -TemplateParameterFile $sqlParametersFile
 
     Write-Host "Deploy FWS..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-fsw" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-fsw" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $fswParametersFile
 
     Write-Host "Prepare SQL Always ON..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-ao-iaas-ext" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-ao-iaas-ext" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $sqlPrepareAOExtensionParametersFile
 
 	Write-Host "Configure SQL Always ON..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-ao-iaas-ext" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-ao-iaas-ext" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $sqlConfigureAOExtensionParametersFile
 }
-elseif ($Mode -eq "Workload") {
+elseif ($Mode -eq "Step3Workload") {
     Write-Host "Creating workload resource group..."
     $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
 	Write-Host "Deploying Storage account for file share..."
 	$fileshareStorageAccountName = "strgbm$(Get-Date -format 'yyyyMMddHHmm')"
-	New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-fileshare-deployment" `
+	New-AzureRmResourceGroupDeployment -Name "boinfra-fileshare-deployment" `
 		-ResourceGroupName $workloadResourceGroup.ResourceGroupName `
 		-TemplateFile $fileshareTemplateFile `
 		-storageAccountName $fileshareStorageAccountName -accountType "Standard_LRS" -location $Location
@@ -162,22 +166,21 @@ elseif ($Mode -eq "Workload") {
 	$webLoadBalancerParameterObject | ConvertTo-Json -Depth 100 | Out-File $webLoadBalancerParametersFile
 	$web2LoadBalancerParameterObject | ConvertTo-Json -Depth 100 | Out-File $web2LoadBalancerParametersFile
 
-	Write-Host "Deploy Web servers load balancer..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
+	Write-Host "Deploy Web servers with load balancer..."
+    New-AzureRmResourceGroupDeployment -Name "boinfra-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
         -TemplateParameterFile $webLoadBalancerParametersFile
 	
 	Write-Host "Deploy Web2 servers with load balancer..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web2-deployment" `
+    New-AzureRmResourceGroupDeployment -Name "boinfra-web2-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
         -TemplateParameterFile $web2LoadBalancerParametersFile
 }
-elseif ($Mode -eq "Security") {
-    # Deploy NSGs
+elseif ($Mode -eq "Step4Security") {
     $infrastructureResourceGroup = Get-AzureRmResourceGroup -Name $infrastructureResourceGroupName 
 
     Write-Host "Deploying NSGs..."
-    New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-nsg-deployment" -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
-        -TemplateUri $networkSecurityGroupTemplate.AbsoluteUri -TemplateParameterFile $networkSecurityGroupParametersFile
-
+    New-AzureRmResourceGroupDeployment -Name "boinfra-nsg-deployment" `
+		-ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $networkSecurityGroupTemplate.AbsoluteUri  `
+		-TemplateParameterFile $networkSecurityGroupParametersFile
 }

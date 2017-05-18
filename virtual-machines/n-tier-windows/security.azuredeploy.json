@@ -31,7 +31,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-ntier-sql-nsg-deployment",
+      "name": "boinfra-nsg-deployment",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
