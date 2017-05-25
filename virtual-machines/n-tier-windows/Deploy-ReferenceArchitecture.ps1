@@ -139,7 +139,6 @@ elseif ($Mode -eq "Step3Workload") {
 	$ctx=New-AzureStorageContext -StorageAccountName $fileshareStorageAccountName -StorageAccountKey $storageAccountKey  
 	#Create a new file share
 	$fileshare = New-AzureStorageShare "share1" -Context $ctx
-	$fileshare.Uri
 	
 	Write-Host "Updating web and web2 parameters..."
 	#Get web templates and provide fileShareSettings
